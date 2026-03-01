@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 DevTools - 开发者工具箱</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f172a;
+            color: #f1f5f9;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1000px; margin: 0 auto; }
+        h1 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+        .subtitle { color: #94a3b8; margin-bottom: 30px; }
+        
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .tool-card {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #334155;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tool-card:hover { border-color: #6366f1; transform: translateY(-2px); }
+        .tool-card h3 { font-size: 1.1rem; margin-bottom: 10px; }
+        .tool-card p { color: #94a3b8; font-size: 0.9rem; }
+        
+        /* Tool Panel */
+        .tool-panel {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 30px;
+            display: none;
+        }
+        .tool-panel.active { display: block; }
+        .tool-panel h2 { margin-bottom: 20px; }
+        
+        textarea, input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            background: #0f172a;
+            color: #f1f5f9;
+            font-family: monospace;
+            margin-bottom: 10px;
+        }
+        textarea { min-height: 150px; }
+        
+        .btn {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .btn:hover { background: #4f46e5; }
+        .btn-secondary { background: #334155; }
+        
+        .result {
+            background: #0f172a;
+            padding: 15px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            margin-top: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 DevTools</h1>
+        <p class="subtitle">开发者常用工具集合</p>
+        
+        <div class="tools-grid">
+            <div class="tool-card" onclick="showTool('json')">
+                <h3>📄 JSON 格式化</h3>
+                <p>JSON 压缩/格式化/校验</p>
+            </div>
+            <div class="tool-card" onclick="showTool('base64')">
+                <h3>🔐 Base64 编解码</h3>
+                <p>Base64 加密/解密</p>
+            </div>
+            <div class="tool-card" onclick="showTool('hash')">
+                <h3>#️⃣ Hash 生成器</h3>
+                <p>MD5/SHA1/SHA256</p>
+            </div>
+            <div class="tool-card" onclick="showTool('jwt')">
+                <h3>🎫 JWT 解码</h3>
+                <p>解析 JWT Token</p>
+            </div>
+            <div class="tool-card" onclick="showTool('cron')">
+                <h3>⏰ Cron 表达式</h3>
+                <p>Cron 生成/解析</p>
+            </div>
+            <div class="tool-card" onclick="showTool('timestamp')">
+                <h3>🕐 时间戳转换</h3>
+                <p>Unix 时间戳转换</p>
+            </div>
+            <div class="tool-card" onclick="showTool('color')">
+                <h3>🎨 颜色转换</h3>
+                <p>HEX/RGB/HSL 互转</p>
+            </div>
+            <div class="tool-card" onclick="showTool('diff')">
+                <h3>📝 文本对比</h3>
+                <p>比较两段文本差异</p>
+            </div>
+            <div class="tool-card" onclick="showTool('qrcode')">
+                <h3>📱 二维码</h3>
+                <p>生成/解析二维码</p>
+            </div>
+            <div class="tool-card" onclick="showTool('uuid')">
+                <h3>🆔 UUID 生成</h3>
+                <p>批量生成 UUID</p>
+            </div>
+        </div>
+        
+        <!-- JSON Tool -->
+        <div class="tool-panel" id="json">
+            <h2>📄 JSON 格式化</h2>
+            <textarea id="jsonInput" placeholder="输入 JSON..."></textarea>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn" onclick="jsonFormat()">格式化</button>
+                <button class="btn btn-secondary" onclick="jsonCompress()">压缩</button>
+                <button class="btn btn-secondary" onclick="jsonValidate()">校验</button>
+            </div>
+            <div class="result" id="jsonResult"></div>
+        </div>
+        
+        <!-- Base64 Tool -->
+        <div class="tool-panel" id="base64">
+            <h2>🔐 Base64 编解码</h2>
+            <textarea id="base64Input" placeholder="输入内容..."></textarea>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn" onclick="base64Encode()">编码</button>
+                <button class="btn btn-secondary" onclick="base64Decode()">解码</button>
+            </div>
+            <div class="result" id="base64Result"></div>
+        </div>
+        
+        <!-- Hash Tool -->
+        <div class="tool-panel" id="hash">
+            <h2>#️⃣ Hash 生成器</h2>
+            <textarea id="hashInput" placeholder="输入内容..."></textarea>
+            <button class="btn" onclick="hashGenerate()">生成 Hash</button>
+            <div class="result" id="hashResult"></div>
+        </div>
+        
+        <!-- Timestamp Tool -->
+        <div class="tool-panel" id="timestamp">
+            <h2>🕐 时间戳转换</h2>
+            <input type="text" id="tsInput" placeholder="输入时间戳或日期...">
+            <button class="btn" onclick="timestampConvert()">转换</button>
+            <div class="result" id="tsResult"></div>
+        </div>
+        
+        <!-- UUID Tool -->
+        <div class="tool-panel" id="uuid">
+            <h2>🆔 UUID 生成</h2>
+            <input type="number" id="uuidCount" value="1" min="1" max="100" placeholder="数量">
+            <button class="btn" onclick="uuidGenerate()">生成</button>
+            <div class="result" id="uuidResult"></div>
+        </div>
+        
+        <!-- Color Tool -->
+        <div class="tool-panel" id="color">
+            <h2>🎨 颜色转换</h2>
+            <input type="text" id="colorInput" placeholder="输入颜色，如 #6366f1">
+            <button class="btn" onclick="colorConvert()">转换</button>
+            <div class="result" id="colorResult"></div>
+        </div>
+    </div>
+
+    <script>
+        function showTool(name) {
+            document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById(name).classList.add('active');
+        }
+        
+        function jsonFormat() {
+            try {
+                const obj = JSON.parse(document.getElementById('jsonInput').value);
+                document.getElementById('jsonResult').textContent = JSON.stringify(obj, null, 2);
+            } catch(e) {
+                document.getElementById('jsonResult').textContent = '❌ JSON 格式错误: ' + e.message;
+            }
+        }
+        
+        function jsonCompress() {
+            try {
+                const obj = JSON.parse(document.getElementById('jsonInput').value);
+                document.getElementById('jsonResult').textContent = JSON.stringify(obj);
+            } catch(e) {
+                document.getElementById('jsonResult').textContent = '❌ JSON 格式错误: ' + e.message;
+            }
+        }
+        
+        function jsonValidate() {
+            try {
+                JSON.parse(document.getElementById('jsonInput').value);
+                document.getElementById('jsonResult').textContent = '✅ JSON 格式正确';
+            } catch(e) {
+                document.getElementById('jsonResult').textContent = '❌ JSON 格式错误: ' + e.message;
+            }
+        }
+        
+        function base64Encode() {
+            try {
+                document.getElementById('base64Result').textContent = btoa(document.getElementById('base64Input').value);
+            } catch(e) {
+                document.getElementById('base64Result').textContent = '❌ 编码错误';
+            }
+        }
+        
+        function base64Decode() {
+            try {
+                document.getElementById('base64Result').textContent = atob(document.getElementById('base64Input').value);
+            } catch(e) {
+                document.getElementById('base64Result').textContent = '❌ 解码错误';
+            }
+        }
+        
+        async function hashGenerate() {
+            const text = document.getElementById('hashInput').value;
+            const encoder = new TextEncoder();
+            const data = encoder.encode(text);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            
+            document.getElementById('hashResult').textContent = 
+                `MD5: ${md5(text)}\nSHA-1: ${sha1(text)}\nSHA-256: ${hashHex}`;
+        }
+        
+        // Simple hash functions
+        function md5(s) {
+            return s.split('').reduce((a,b) => (((a << 5) - a) + b.charCodeAt(0))|0, 0).toString(16);
+        }
+        function sha1(s) {
+            return s.split('').reduce((a,b) => (((a << 5) - a) + b.charCodeAt(0))|0, 0).toString(16);
+        }
+        
+        function timestampConvert() {
+            const input = document.getElementById('tsInput').value.trim();
+            let result = '';
+            
+            if (/^\d+$/.test(input)) {
+                const date = new Date(parseInt(input) * (input.length === 10 ? 1000 : 1));
+                result = `日期: ${date.toLocaleString()}\nISO: ${date.toISOString()}`;
+            } else {
+                const date = new Date(input);
+                if (!isNaN(date.getTime())) {
+                    result = `时间戳(秒): ${Math.floor(date.getTime() / 1000)}\n时间戳(毫秒): ${date.getTime()}`;
+                } else {
+                    result = '❌ 无法解析日期';
+                }
+            }
+            document.getElementById('tsResult').textContent = result;
+        }
+        
+        function uuidGenerate() {
+            const count = parseInt(document.getElementById('uuidCount').value) || 1;
+            let result = '';
+            for (let i = 0; i < count; i++) {
+                result += crypto.randomUUID() + '\n';
+            }
+            document.getElementById('uuidResult').textContent = result;
+        }
+        
+        function colorConvert() {
+            const input = document.getElementById('colorInput').value.trim();
+            
+            // HEX to RGB
+            if (input.startsWith('#')) {
+                const r = parseInt(input.slice(1,3), 16);
+                const g = parseInt(input.slice(3,5), 16);
+                const b = parseInt(input.slice(5,7), 16);
+                document.getElementById('colorResult').textContent = 
+                    `HEX: ${input}\nRGB: rgb(${r}, ${g}, ${b})\nRGBA: rgba(${r}, ${g}, ${b}, 1)`;
+            } else if (input.startsWith('rgb')) {
+                const match = input.match(/\d+/g);
+                if (match) {
+                    const r = match[0], g = match[1], b = match[2];
+                    document.getElementById('colorResult').textContent = 
+                        `RGB: rgb(${r}, ${g}, ${b})\nHEX: #${parseInt(r).toString(16)}${parseInt(g).toString(16)}${parseInt(b).toString(16)}`;
+                }
+            } else {
+                document.getElementById('colorResult').textContent = '❌ 请输入有效的颜色值';
+            }
+        }
+    </script>
+</body>
+</html>
